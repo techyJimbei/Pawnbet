@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ProductRequestDTO {
+public class ProductUpdateDTO {
     private String title;
     private String description;
     private BigDecimal basePrice;
