@@ -50,9 +50,7 @@ public class ProductService {
 
         product.setImages(images);
 
-        System.out.println("Saving product to DB...");
         Product saved = productRepository.save(product);
-        System.out.println("Saved product ID: " + saved.getId());
         return new ProductResponseDTO(saved);
 
     }

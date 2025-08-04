@@ -1,10 +1,16 @@
 package com.shrutymalviya.pawnbet.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "comments")
-public class Comment {
+@Getter
+@Setter
+public class Comment extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +26,9 @@ public class Comment {
     private Product product;
 
     @ManyToOne
-    private Comment parent; // For nested comments
+    private Comment parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> children;
 
 }
