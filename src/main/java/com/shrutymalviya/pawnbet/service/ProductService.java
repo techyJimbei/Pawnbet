@@ -11,10 +11,13 @@ import com.shrutymalviya.pawnbet.pojos.ProductUpdateDTO;
 import com.shrutymalviya.pawnbet.repositrory.ProductRepository;
 import com.shrutymalviya.pawnbet.repositrory.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -102,4 +105,16 @@ public class ProductService {
         }
         productRepository.delete(product);
     }
+
+    public List<ProductResponseDTO> getTrendingProducts() {
+        Pageable topTen = PageRequest.of(0, 10);
+        List<Product> trendingProducts = productRepository.findTop10TrendingProducts(topTen);
+        return trendingProducts.stream().map(ProductResponseDTO::new).toList();
+    }
+
+    public List<ProductResponseDTO> searchProducts(String keyword) {
+        List<Product> products = productRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
+        return products.stream().map(ProductResponseDTO::new).collect(Collectors.toList());
+    }
+
 }

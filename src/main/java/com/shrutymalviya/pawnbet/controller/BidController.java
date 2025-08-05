@@ -3,13 +3,16 @@ package com.shrutymalviya.pawnbet.controller;
 import com.shrutymalviya.pawnbet.model.Bid;
 import com.shrutymalviya.pawnbet.pojos.BidRequestDTO;
 import com.shrutymalviya.pawnbet.pojos.BidResponseDTO;
+import com.shrutymalviya.pawnbet.repositrory.BidRepository;
 import com.shrutymalviya.pawnbet.service.BidService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -17,6 +20,9 @@ public class BidController {
 
     @Autowired
     private BidService bidService;
+
+    @Autowired
+    private BidRepository bidRepository;
 
     @PostMapping("/bid/{product_id}/{bidder_id}")
     public ResponseEntity<?> raiseBid(@RequestBody BidRequestDTO bidRequestDTO, @PathVariable long product_id, @PathVariable long bidder_id) {
@@ -42,9 +48,10 @@ public class BidController {
     }
 
     @PutMapping("/bid/{bid_id}")
-    public ResponseEntity<?> updateBid(@RequestBody BidRequestDTO bidRequestDTO, @PathVariable long bid_id){
+    public ResponseEntity<?> updateBid(@RequestBody BidRequestDTO bidRequestDTO, @PathVariable long bid_id, Authentication authentication){
         try{
-            BidResponseDTO bidResponseDTO = bidService.updateBid(bidRequestDTO, bid_id);
+            String username = authentication.getName();
+            BidResponseDTO bidResponseDTO = bidService.updateBid(bidRequestDTO, bid_id, username);
             return ResponseEntity.ok(bidResponseDTO);
         }
         catch(Exception e){
@@ -52,10 +59,11 @@ public class BidController {
         }
     }
 
-    @DeleteMapping("/bid/{bid_id}/{bidder_id}")
-    public String deleteBid(@PathVariable long bid_id, @PathVariable long bidder_id){
+    @DeleteMapping("/bid/{bid_id}")
+    public String deleteBid(@PathVariable long bid_id, Authentication authentication){
         try{
-            bidService.deleteBid(bid_id, bidder_id);
+            String username = authentication.getName();
+            bidService.deleteBid(bid_id, username);
             return "bid deleted";
         }
         catch(Exception e){
@@ -63,5 +71,22 @@ public class BidController {
         }
 
     }
+
+    @PutMapping("/bid/{bidId}/accept")
+    public ResponseEntity<?> acceptBid(@PathVariable Long bidId, Authentication authentication) {
+        String username = authentication.getName();
+        bidService.acceptBid(bidId, username);
+        return ResponseEntity.ok("Bid accepted");
+    }
+
+    @GetMapping("/bid/my")
+    public ResponseEntity<?> getMyBids(Authentication authentication) {
+        String username = authentication.getName();
+        List<Bid> active = bidRepository.findByBidderUsernameAndAccepted(username, false);
+        List<Bid> accepted = bidRepository.findByBidderUsernameAndAccepted(username, true);
+        return ResponseEntity.ok(Map.of("active", active, "accepted", accepted));
+    }
+
+
 
 }

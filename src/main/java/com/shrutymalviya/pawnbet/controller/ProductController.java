@@ -46,6 +46,11 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/product/search")
+    public ResponseEntity<List<ProductResponseDTO>> searchProducts(@RequestParam String keyword) {
+        return ResponseEntity.ok(productService.searchProducts(keyword));
+    }
+
     @PutMapping("/product/{product_id}")
     public ResponseEntity<?> updateProduct(@PathVariable int product_id, @RequestBody ProductUpdateDTO productUpdateDTO, Authentication authentication) {
         try{
@@ -64,5 +69,12 @@ public class ProductController {
         productService.deleteProduct(product_id, username);
         return "Product deleted successfully";
     }
+
+    @GetMapping("/product/trending")
+    public ResponseEntity<List<ProductResponseDTO>> getTrendingProducts(){
+        List<ProductResponseDTO> trendingProducts = productService.getTrendingProducts();
+        return ResponseEntity.ok(trendingProducts);
+    }
+
 
 }

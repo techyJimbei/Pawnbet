@@ -11,4 +11,9 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     List<Bid> findByProduct(Product product);
 
     List<Bid> bidder(User bidder);
+
+    List<Bid> findByBidderUsername(String username);
+
+    List<Bid> findByBidderUsernameAndAccepted(String username, boolean accepted);
+
 }
