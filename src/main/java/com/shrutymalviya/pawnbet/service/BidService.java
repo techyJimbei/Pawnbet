@@ -28,8 +28,8 @@ public class BidService {
     private ProductRepository productRepository;
 
 
-    public BidResponseDTO raiseBid(BidRequestDTO bidRequestDTO, long product_id, long bidder_id) throws RuntimeException {
-        User bidder = userRepository.findById(bidder_id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public BidResponseDTO raiseBid(BidRequestDTO bidRequestDTO, long product_id, String username) throws RuntimeException {
+        User bidder = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         Product product = productRepository.findById(product_id).orElseThrow(() -> new RuntimeException("Product not found"));
 

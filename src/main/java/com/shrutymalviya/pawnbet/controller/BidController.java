@@ -6,7 +6,6 @@ import com.shrutymalviya.pawnbet.pojos.BidResponseDTO;
 import com.shrutymalviya.pawnbet.repositrory.BidRepository;
 import com.shrutymalviya.pawnbet.service.BidService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +23,11 @@ public class BidController {
     @Autowired
     private BidRepository bidRepository;
 
-    @PostMapping("/bid/{product_id}/{bidder_id}")
-    public ResponseEntity<?> raiseBid(@RequestBody BidRequestDTO bidRequestDTO, @PathVariable long product_id, @PathVariable long bidder_id) {
+    @PostMapping("/bid/{product_id}")
+    public ResponseEntity<?> raiseBid(@RequestBody BidRequestDTO bidRequestDTO, @PathVariable long product_id, Authentication authentication) {
         try{
-            BidResponseDTO bidResponseDTO = bidService.raiseBid(bidRequestDTO, product_id, bidder_id);
+            String username = authentication.getName();
+            BidResponseDTO bidResponseDTO = bidService.raiseBid(bidRequestDTO, product_id, username);
             return ResponseEntity.ok(bidResponseDTO);
         }
         catch(Exception e){
