@@ -32,6 +32,7 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-
+    @OneToOne(mappedBy = "winningBidder", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Auction winningAuction;
 
 }

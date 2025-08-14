@@ -1,5 +1,6 @@
 package com.shrutymalviya.pawnbet.pojos;
 
+import com.shrutymalviya.pawnbet.model.AuctionStatus;
 import com.shrutymalviya.pawnbet.model.Image;
 import com.shrutymalviya.pawnbet.model.Product;
 import com.shrutymalviya.pawnbet.model.ProductStatus;
@@ -21,7 +22,8 @@ public class ProductResponseDTO {
     private String title;
     private String description;
     private BigDecimal basePrice;
-    private ProductStatus status;
+    private ProductStatus productStatus;
+    private AuctionStatus auctionStatus;
     private UserResponseDTO seller;
     private List<String> imageUrls;
     private LocalDateTime createdAt;
@@ -31,7 +33,8 @@ public class ProductResponseDTO {
         this.title = saved.getTitle();
         this.description = saved.getDescription();
         this.basePrice = saved.getBasePrice();
-        this.status = saved.getStatus();
+        this.productStatus = saved.getProductStatus();
+        this.auctionStatus = saved.getAuctionStatus();
         this.imageUrls = saved.getImages().stream()
                 .map(Image::getImageUrl)
                 .collect(Collectors.toList());

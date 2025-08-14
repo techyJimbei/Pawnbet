@@ -1,13 +1,12 @@
 package com.shrutymalviya.pawnbet.service;
 
 
-import com.shrutymalviya.pawnbet.model.Image;
-import com.shrutymalviya.pawnbet.model.Product;
-import com.shrutymalviya.pawnbet.model.ProductStatus;
-import com.shrutymalviya.pawnbet.model.User;
+import com.shrutymalviya.pawnbet.model.*;
+import com.shrutymalviya.pawnbet.pojos.AuctionScheduleRequestDTO;
 import com.shrutymalviya.pawnbet.pojos.ProductRequestDTO;
 import com.shrutymalviya.pawnbet.pojos.ProductResponseDTO;
 import com.shrutymalviya.pawnbet.pojos.ProductUpdateDTO;
+import com.shrutymalviya.pawnbet.repositrory.AuctionRepository;
 import com.shrutymalviya.pawnbet.repositrory.ProductRepository;
 import com.shrutymalviya.pawnbet.repositrory.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +26,9 @@ public class ProductService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AuctionRepository auctionRepository;
+
     @Transactional
     public ProductResponseDTO listProduct(ProductRequestDTO productRequestDTO, String username) throws UsernameNotFoundException {
 
@@ -38,7 +38,8 @@ public class ProductService {
         product.setTitle(productRequestDTO.getTitle());
         product.setDescription(productRequestDTO.getDescription());
         product.setBasePrice(productRequestDTO.getBasePrice());
-        product.setStatus(ProductStatus.ACTIVE);
+        product.setProductStatus(ProductStatus.ACTIVE);
+        product.setAuctionStatus(AuctionStatus.YET_TO_DECLARE);
         product.setSeller(user);
 
         List<Image> images = (productRequestDTO.getImageUrls() != null)
@@ -117,4 +118,16 @@ public class ProductService {
         return products.stream().map(ProductResponseDTO::new).collect(Collectors.toList());
     }
 
+    public void addAuctionDetails(long productId, String username, AuctionScheduleRequestDTO auctionScheduleRequestDTO) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not Found"));
+
+        Auction auction = new Auction();
+        auction.setProduct(product);
+        auction.setStartTime(auctionScheduleRequestDTO.getAuctionStartTime());
+        auction.setEndTime(auctionScheduleRequestDTO.getAuctionEndTime());
+        auction.setMinimumBidIncrement(auctionScheduleRequestDTO.getMinimumBidIncrement());
+
+        auctionRepository.save(auction);
+    }
 }

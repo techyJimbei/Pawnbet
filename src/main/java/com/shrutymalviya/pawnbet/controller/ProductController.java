@@ -1,11 +1,10 @@
 package com.shrutymalviya.pawnbet.controller;
 
 
-import com.shrutymalviya.pawnbet.model.User;
+import com.shrutymalviya.pawnbet.pojos.AuctionScheduleRequestDTO;
 import com.shrutymalviya.pawnbet.pojos.ProductRequestDTO;
 import com.shrutymalviya.pawnbet.pojos.ProductResponseDTO;
 import com.shrutymalviya.pawnbet.pojos.ProductUpdateDTO;
-import com.shrutymalviya.pawnbet.repositrory.ProductRepository;
 import com.shrutymalviya.pawnbet.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +19,7 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
-    @Autowired
-    private ProductRepository productRepository;
+
 
     @PostMapping("/product")
     public ResponseEntity<?> listProduct(@RequestBody ProductRequestDTO productRequestDTO, Authentication authentication) {
@@ -74,6 +72,15 @@ public class ProductController {
     public ResponseEntity<List<ProductResponseDTO>> getTrendingProducts(){
         List<ProductResponseDTO> trendingProducts = productService.getTrendingProducts();
         return ResponseEntity.ok(trendingProducts);
+    }
+
+    @PostMapping("/product/{id}/auction")
+    public ResponseEntity<?> addAuctionDetails(@PathVariable long id,
+                                               @RequestBody AuctionScheduleRequestDTO auctionScheduleRequestDTO,
+                                               Authentication authentication){
+        String username = authentication.getName();
+        productService.addAuctionDetails(id, username, auctionScheduleRequestDTO);
+        return ResponseEntity.ok("Auction details added successfully");
     }
 
 

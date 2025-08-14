@@ -26,7 +26,10 @@ public class Product extends BaseEntity {
     private BigDecimal basePrice;
 
     @Enumerated(EnumType.STRING)
-    private ProductStatus status;
+    private ProductStatus productStatus;
+
+    @Enumerated(EnumType.STRING)
+    private AuctionStatus auctionStatus;
 
     @ManyToOne
     private User seller;
@@ -39,5 +42,8 @@ public class Product extends BaseEntity {
 
     @OneToMany(mappedBy="product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
+
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Auction auction;
 
 }
