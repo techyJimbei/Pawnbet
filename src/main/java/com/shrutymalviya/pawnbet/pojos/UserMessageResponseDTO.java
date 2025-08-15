@@ -1,6 +1,10 @@
 package com.shrutymalviya.pawnbet.pojos;
 
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class UserMessageResponseDTO {
     private String message;
     private boolean success;
@@ -10,19 +14,4 @@ public class UserMessageResponseDTO {
         this.success = success;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
 }

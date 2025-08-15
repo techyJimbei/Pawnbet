@@ -23,7 +23,6 @@ public class Auction {
 
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private BigDecimal minimumBidIncrement;
 
     @OneToOne
     @JoinColumn(name = "product_id")

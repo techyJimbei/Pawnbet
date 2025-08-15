@@ -126,7 +126,6 @@ public class ProductService {
         auction.setProduct(product);
         auction.setStartTime(auctionScheduleRequestDTO.getAuctionStartTime());
         auction.setEndTime(auctionScheduleRequestDTO.getAuctionEndTime());
-        auction.setMinimumBidIncrement(auctionScheduleRequestDTO.getMinimumBidIncrement());
 
         auctionRepository.save(auction);
     }

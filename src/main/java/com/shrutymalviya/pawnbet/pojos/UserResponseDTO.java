@@ -1,7 +1,12 @@
 package com.shrutymalviya.pawnbet.pojos;
 
 import com.shrutymalviya.pawnbet.model.User;
+import lombok.Getter;
+import lombok.Setter;
 
+
+@Getter
+@Setter
 public class UserResponseDTO {
     private Long id;
     private String username;
@@ -13,21 +18,5 @@ public class UserResponseDTO {
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.profileImageUrl = user.getProfileImageUrl();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getProfileImageUrl() {
-        return profileImageUrl;
     }
 }

@@ -12,5 +12,4 @@ import java.time.LocalDateTime;
 public class AuctionScheduleRequestDTO {
     private LocalDateTime auctionStartTime;
     private LocalDateTime auctionEndTime;
-    private BigDecimal minimumBidIncrement;
 }
