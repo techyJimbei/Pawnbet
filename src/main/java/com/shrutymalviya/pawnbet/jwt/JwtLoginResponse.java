@@ -8,6 +8,5 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class JwtLoginResponse {
-    private String message;
     private String token;
 }

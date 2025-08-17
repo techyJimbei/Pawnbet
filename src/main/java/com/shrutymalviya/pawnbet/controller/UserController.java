@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/auth")
 public class UserController {
@@ -27,9 +28,9 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDTO> signup(@RequestBody UserSignUpRequestDTO dto) {
-        UserResponseDTO response = userService.signup(dto);
-        return ResponseEntity.ok(response);
+    public String signup(@RequestBody UserSignUpRequestDTO dto) {
+        userService.signup(dto);
+        return "User Signed in successfully";
     }
 
     @PostMapping("/login")
@@ -43,11 +44,19 @@ public class UserController {
             String token = jwtUtil.generateToken(userDetails.getUsername());
 
             return ResponseEntity.ok().body(
-                    new JwtLoginResponse("Login successful", token)
+                    new JwtLoginResponse(token)
             );
 
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(401).body("Invalid username or password");
         }
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserResponseDTO> getProfile(Authentication authentication){
+        String username = authentication.getName();
+        UserResponseDTO userResponseDTO = userService.getProfile(username);
+        return ResponseEntity.ok().body(userResponseDTO);
+    }
+
 }

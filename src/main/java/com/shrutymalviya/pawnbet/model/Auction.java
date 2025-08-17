@@ -28,7 +28,7 @@ public class Auction {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "winning_bidder_id")
     private User winningBidder;
 }

@@ -7,6 +7,7 @@ import com.shrutymalviya.pawnbet.pojos.UserResponseDTO;
 import com.shrutymalviya.pawnbet.pojos.UserSignUpRequestDTO;
 import com.shrutymalviya.pawnbet.repositrory.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
 
-    public UserResponseDTO signup(UserSignUpRequestDTO dto) {
+    public void signup(UserSignUpRequestDTO dto) {
         if(userRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("Email address already in use");
         }
@@ -35,7 +36,6 @@ public class UserService {
         user.setProfileImageUrl(dto.getProfileImageUrl());
 
         userRepository.save(user);
-        return new UserResponseDTO(user);
     }
 
     public UserResponseDTO login(String username, String rawPassword) {
@@ -48,4 +48,8 @@ public class UserService {
     }
 
 
+    public UserResponseDTO getProfile(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User does not exist"));
+        return new UserResponseDTO(user);
+    }
 }

@@ -26,13 +26,13 @@ public class User extends BaseEntity {
     private String password;
     private String profileImageUrl;
 
-    @OneToMany(mappedBy = "bidder", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "bidder", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Bid> bids = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToOne(mappedBy = "winningBidder", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Auction winningAuction;
+    @OneToMany(mappedBy = "winningBidder", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Auction> winningAuctions = new ArrayList<>();
 
 }
