@@ -23,6 +23,8 @@ public class Product extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    private String tag;
+
     private BigDecimal basePrice;
 
     @Enumerated(EnumType.STRING)
@@ -34,8 +36,7 @@ public class Product extends BaseEntity {
     @ManyToOne
     private User seller;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images = new ArrayList<>();
+    private String image;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bid> bids = new ArrayList<>();

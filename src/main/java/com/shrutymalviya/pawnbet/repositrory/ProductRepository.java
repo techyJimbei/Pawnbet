@@ -11,7 +11,7 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findBySeller(User seller);
 
-    List<Product> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String title, String description);
+    List<Product> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrTagContainingIgnoreCase(String title, String description, String tag);
 
     @Query("SELECT p FROM Product p LEFT JOIN p.bids b GROUP BY p ORDER BY COUNT(b) DESC")
     List<Product> findTop10TrendingProducts(Pageable pageable);

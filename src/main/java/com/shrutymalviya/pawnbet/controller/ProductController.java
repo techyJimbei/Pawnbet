@@ -1,11 +1,9 @@
 package com.shrutymalviya.pawnbet.controller;
 
 
-import com.shrutymalviya.pawnbet.pojos.AuctionScheduleRequestDTO;
-import com.shrutymalviya.pawnbet.pojos.ProductRequestDTO;
-import com.shrutymalviya.pawnbet.pojos.ProductResponseDTO;
-import com.shrutymalviya.pawnbet.pojos.ProductUpdateDTO;
+import com.shrutymalviya.pawnbet.pojos.*;
 import com.shrutymalviya.pawnbet.service.ProductService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -34,12 +32,23 @@ public class ProductController {
     }
 
     @GetMapping("/product")
-    public ResponseEntity<?> getProducts(Authentication authentication) {
+    public ResponseEntity<?> getMyProducts(Authentication authentication) {
         try{
             String username = authentication.getName();
-            List<ProductResponseDTO> productResponseDTOS = productService.fetchProducts(username);
+            List<ProductResponseDTO> productResponseDTOS = productService.getMyProducts(username);
             return ResponseEntity.ok(productResponseDTOS);
         } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to fetch products: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/products")
+    public ResponseEntity<?> getAllProducts(){
+        try{
+            List<ProductResponseDTO> productsResponseDTOs = productService.getAllProducts();
+            return ResponseEntity.ok(productsResponseDTOs);
+        }
+        catch(Exception e){
             return ResponseEntity.badRequest().body("Failed to fetch products: " + e.getMessage());
         }
     }
@@ -81,6 +90,13 @@ public class ProductController {
         String username = authentication.getName();
         productService.addAuctionDetails(id, username, auctionScheduleRequestDTO);
         return ResponseEntity.ok("Auction details added successfully");
+    }
+
+    @GetMapping("/product/{id}/auction")
+    public ResponseEntity<?> getAuctionDetails(@PathVariable long id, Authentication authentication){
+        String username = authentication.getName();
+        AuctionScheduleResponseDTO auctionScheduleResponseDTO = productService.getAuctionDetails(username, id);
+        return ResponseEntity.ok(auctionScheduleResponseDTO);
     }
 
 

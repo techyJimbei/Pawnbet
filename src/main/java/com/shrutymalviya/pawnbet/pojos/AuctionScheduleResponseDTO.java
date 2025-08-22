@@ -1,5 +1,7 @@
 package com.shrutymalviya.pawnbet.pojos;
 
+import com.shrutymalviya.pawnbet.model.Auction;
+import com.shrutymalviya.pawnbet.model.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,25 +15,18 @@ public class AuctionScheduleResponseDTO {
     private Long id;
     private Long productId;
     private BigDecimal basePrice;
-    private Long winningBidderId;
+    private User winningBidder;
     private LocalDateTime auctionStartTime;
     private LocalDateTime auctionEndTime;
 
-    public AuctionScheduleResponseDTO(Long id,
-                                      LocalDateTime auctionEndTime,
-                                      LocalDateTime auctionStartTime,
-                                      Long winningBidderId,
-                                      BigDecimal basePrice,
-                                      Long productId
-    )
+    public AuctionScheduleResponseDTO(Auction auction)
     {
-        this.id = id;
-        this.auctionEndTime = auctionEndTime;
-        this.auctionStartTime = auctionStartTime;
-        this.winningBidderId = winningBidderId;
-        this.basePrice = basePrice;
-        this.productId = productId;
+        this.id = auction.getId();
+        this.auctionEndTime = auction.getEndTime();
+        this.auctionStartTime = auction.getStartTime();
+        this.winningBidder = auction.getWinningBidder();
+        this.basePrice = auction.getProduct().getBasePrice();
+        this.productId = auction.getProduct().getId();
     }
-
 
 }

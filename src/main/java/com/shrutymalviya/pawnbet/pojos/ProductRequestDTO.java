@@ -11,6 +11,7 @@ import java.util.List;
 public class ProductRequestDTO {
     private String title;
     private String description;
+    private String tag;
     private BigDecimal basePrice;
-    private List<String> imageUrls;
+    private String imageUrls;
 }
