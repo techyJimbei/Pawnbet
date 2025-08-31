@@ -9,5 +9,5 @@ import java.math.BigDecimal;
 @Setter
 public class BidRequestDTO {
     private BigDecimal bidAmount;
-    private long productId;
+    private Long productId;
 }

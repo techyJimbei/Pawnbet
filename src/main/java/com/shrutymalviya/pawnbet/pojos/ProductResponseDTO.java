@@ -25,6 +25,7 @@ public class ProductResponseDTO {
     private UserResponseDTO seller;
     private String imageUrl;
     private LocalDateTime createdAt;
+    private Boolean isWishlisted;
 
     public ProductResponseDTO(Product saved) {
         this.id = saved.getId();
@@ -36,7 +37,8 @@ public class ProductResponseDTO {
         this.auctionStatus = saved.getAuctionStatus();
         this.imageUrl = saved.getImage();
         this.seller = new UserResponseDTO(saved.getSeller());
-        this.createdAt = saved.getCreated();
+        this.createdAt = saved.getCreatedAt();
+        this.isWishlisted = false;
     }
 
 

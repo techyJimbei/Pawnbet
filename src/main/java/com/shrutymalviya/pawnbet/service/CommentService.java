@@ -52,7 +52,7 @@ public class CommentService {
     public List<CommentResponseDTO> getAllComments(long product_id) {
         Product product = productRepository.findById(product_id).orElseThrow(() -> new RuntimeException("Product not found"));
 
-        List<Comment> comments = commentRepository.findByProduct(product);
+        List<Comment> comments = commentRepository.findByProductAndParentIsNull(product);
         return comments.stream().map(CommentResponseDTO::new).collect(Collectors.toList());
     }
 

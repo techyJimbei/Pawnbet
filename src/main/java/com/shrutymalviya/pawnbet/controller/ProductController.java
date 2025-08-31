@@ -43,9 +43,10 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<?> getAllProducts(){
+    public ResponseEntity<?> getAllProducts(Authentication authentication){
         try{
-            List<ProductResponseDTO> productsResponseDTOs = productService.getAllProducts();
+            String username = authentication.getName();
+            List<ProductResponseDTO> productsResponseDTOs = productService.getAllProducts(username);
             return ResponseEntity.ok(productsResponseDTOs);
         }
         catch(Exception e){

@@ -6,6 +6,7 @@ import com.shrutymalviya.pawnbet.pojos.*;
 import com.shrutymalviya.pawnbet.repositrory.AuctionRepository;
 import com.shrutymalviya.pawnbet.repositrory.ProductRepository;
 import com.shrutymalviya.pawnbet.repositrory.UserRepository;
+import com.shrutymalviya.pawnbet.repositrory.WishlistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +29,9 @@ public class ProductService {
 
     @Autowired
     private AuctionRepository auctionRepository;
+
+    @Autowired
+    private WishlistRepository wishlistRepository;
 
     @Transactional
     public ProductResponseDTO listProduct(ProductRequestDTO productRequestDTO, String username) throws UsernameNotFoundException {
@@ -54,12 +59,11 @@ public class ProductService {
 
         List<Product> products = productRepository.findBySeller(user);
 
-        LocalDateTime now = LocalDateTime.now();
-
         return products.stream()
                 .map(product -> {
 
                     AuctionStatus auctionStatus = AuctionStatus.valueOf(calculateAuctionStatus(product, product.getAuction()));
+
 
                     ProductResponseDTO dto = new ProductResponseDTO(product);
                     dto.setAuctionStatus(auctionStatus);
@@ -68,12 +72,22 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductResponseDTO> getAllProducts(){
+    public List<ProductResponseDTO> getAllProducts(String username){
+        User user = userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("User not found"));
+
         List<Product> products = productRepository.findAll();
+
+        Set<Long> wishlistedProductIds = wishlistRepository.findProductIdsByUser(user);
+
 
         return products.stream()
                 .map(product -> {
+
+                    AuctionStatus auctionStatus = AuctionStatus.valueOf(calculateAuctionStatus(product, product.getAuction()));
+
                     ProductResponseDTO dto = new ProductResponseDTO(product);
+                    dto.setIsWishlisted(wishlistedProductIds.contains(product.getId()));
+                    dto.setAuctionStatus(auctionStatus);
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -81,6 +95,7 @@ public class ProductService {
 
 
     public ProductResponseDTO updateProduct(long productId, ProductUpdateDTO productUpdateDTO, String username) throws RuntimeException {
+        User user = userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("User not found"));
         Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not Found"));
 
         if(!product.getSeller().getUsername().equals(username)) {
@@ -91,6 +106,7 @@ public class ProductService {
         if(productUpdateDTO.getDescription() != null) product.setDescription(productUpdateDTO.getDescription());
         if(productUpdateDTO.getBasePrice() != null) product.setBasePrice(productUpdateDTO.getBasePrice());
         if(productUpdateDTO.getImageUrl()!=null) product.setImage(productUpdateDTO.getImageUrl());
+
 
         Product updatedProduct = productRepository.save(product);
         return new ProductResponseDTO(updatedProduct);
@@ -144,9 +160,6 @@ public class ProductService {
 
         return new AuctionScheduleResponseDTO(auction);
     }
-
-
-
 
 
     private String calculateAuctionStatus(Product product, Auction auction) {

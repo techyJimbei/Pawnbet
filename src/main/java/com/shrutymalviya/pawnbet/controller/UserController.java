@@ -59,4 +59,9 @@ public class UserController {
         return ResponseEntity.ok().body(userResponseDTO);
     }
 
+    @PostMapping("/verify")
+    public Boolean verifyToken(@RequestHeader("Authorization") String token){
+        return jwtUtil.validateToken(token.replace("Bearer ", ""));
+    }
+
 }

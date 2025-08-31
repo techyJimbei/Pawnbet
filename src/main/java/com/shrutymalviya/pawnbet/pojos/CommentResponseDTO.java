@@ -23,6 +23,7 @@ public class CommentResponseDTO {
         this.id = saved.getId();
         this.text = saved.getText();
         this.user = new UserResponseDTO(saved.getUser());
+        this.createdAt = saved.getCreatedAt();
         if (saved.getChildren() != null && !saved.getChildren().isEmpty()) {
             this.replies = saved.getChildren().stream()
                     .map(CommentResponseDTO::new)

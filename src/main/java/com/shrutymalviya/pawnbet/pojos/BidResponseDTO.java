@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class BidResponseDTO {
-    private long id;
+    private Long id;
     private BigDecimal bidAmount;
     private UserResponseDTO bidder;
     private ProductResponseDTO product;
-    private boolean accepted;
+    private Boolean accepted;
     private LocalDateTime createdAt;
 
     public BidResponseDTO(Bid saved){
