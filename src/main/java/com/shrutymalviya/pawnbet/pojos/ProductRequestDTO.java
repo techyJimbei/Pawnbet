@@ -13,5 +13,5 @@ public class ProductRequestDTO {
     private String description;
     private String tag;
     private BigDecimal basePrice;
-    private String imageUrls;
+    private String imageUrl;
 }

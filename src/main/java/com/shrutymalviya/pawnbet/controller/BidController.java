@@ -7,6 +7,7 @@ import com.shrutymalviya.pawnbet.repositrory.BidRepository;
 import com.shrutymalviya.pawnbet.service.BidService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,14 +37,27 @@ public class BidController {
 
     }
 
+
     @GetMapping("/bid/{product_id}")
-    public ResponseEntity<?> getBids(@PathVariable long product_id){
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getBids(@PathVariable long product_id) {
         try{
             List<BidResponseDTO> bids = bidService.getBids(product_id);
             return ResponseEntity.ok(bids);
         }
         catch(Exception e){
             return ResponseEntity.badRequest().body("Failed to get bids" + e.getMessage());
+        }
+    }
+
+    @GetMapping("/bid/highest/{product_id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getHighestBid(@PathVariable long product_id) {
+        try{
+            BidResponseDTO bid = bidService.getHighestBid(product_id);
+            return ResponseEntity.ok(bid);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to get highest bid" + e.getMessage());
         }
     }
 

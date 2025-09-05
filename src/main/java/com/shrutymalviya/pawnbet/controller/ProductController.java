@@ -31,7 +31,7 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/product")
+    @GetMapping("/product/my")
     public ResponseEntity<?> getMyProducts(Authentication authentication) {
         try{
             String username = authentication.getName();
@@ -88,9 +88,13 @@ public class ProductController {
     public ResponseEntity<?> addAuctionDetails(@PathVariable long id,
                                                @RequestBody AuctionScheduleRequestDTO auctionScheduleRequestDTO,
                                                Authentication authentication){
-        String username = authentication.getName();
-        productService.addAuctionDetails(id, username, auctionScheduleRequestDTO);
-        return ResponseEntity.ok("Auction details added successfully");
+        try{
+            String username = authentication.getName();
+            AuctionScheduleResponseDTO auctionScheduleResponseDTO = productService.addAuctionDetails(id, username, auctionScheduleRequestDTO);
+            return ResponseEntity.ok(auctionScheduleResponseDTO);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to add auction details: " + e.getMessage());
+        }
     }
 
     @GetMapping("/product/{id}/auction")

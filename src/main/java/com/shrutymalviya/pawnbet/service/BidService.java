@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,19 +29,27 @@ public class BidService {
     private ProductRepository productRepository;
 
 
-    public BidResponseDTO raiseBid(BidRequestDTO bidRequestDTO, long product_id, String username) throws RuntimeException {
-        User bidder = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public BidResponseDTO raiseBid(BidRequestDTO bidRequestDTO, long product_id, String username) {
+        User bidder = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        Product product = productRepository.findById(product_id).orElseThrow(() -> new RuntimeException("Product not found"));
+        Product product = productRepository.findById(product_id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        List<Bid> existingBids = bidRepository.findByProduct(product);
+
+        BigDecimal highestBid = existingBids.stream()
+                .map(Bid::getBidAmount)
+                .max(BigDecimal::compareTo)
+                .orElse(product.getBasePrice());
+
+        if (bidRequestDTO.getBidAmount().compareTo(highestBid) <= 0) {
+            throw new RuntimeException("Bid amount must be higher than the current highest bid: " + highestBid);
+        }
 
         Bid bid = new Bid();
         bid.setBidder(bidder);
-        boolean isGreaterThan = (bidRequestDTO.getBidAmount().compareTo(product.getBasePrice()) > 0);
-        if (isGreaterThan) {
-            bid.setBidAmount(bidRequestDTO.getBidAmount());
-        } else {
-            throw new RuntimeException("Bid Amount is less than the Base price");
-        }
+        bid.setBidAmount(bidRequestDTO.getBidAmount());
         bid.setProduct(product);
         bid.setAccepted(false);
 
@@ -48,14 +57,24 @@ public class BidService {
         return new BidResponseDTO(saved);
     }
 
+    public BidResponseDTO getHighestBid(long product_id) {
+        Product product = productRepository.findById(product_id).orElseThrow(() -> new RuntimeException("Product not found"));
+
+        Bid bid = bidRepository.findTopByProductOrderByBidAmountDesc(product);
+        return new BidResponseDTO(bid);
+    }
 
     public List<BidResponseDTO> getBids(long productId) {
-        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
 
         List<Bid> bids = bidRepository.findByProduct(product);
 
+        bids.sort((b1, b2) -> b2.getBidAmount().compareTo(b1.getBidAmount()));
+
         return bids.stream().map(BidResponseDTO::new).collect(Collectors.toList());
     }
+
 
     public BidResponseDTO updateBid(BidRequestDTO bidRequestDTO, long bid_id, String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));

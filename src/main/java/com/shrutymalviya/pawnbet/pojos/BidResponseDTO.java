@@ -1,5 +1,6 @@
 package com.shrutymalviya.pawnbet.pojos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.shrutymalviya.pawnbet.model.Bid;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,8 @@ public class BidResponseDTO {
     private UserResponseDTO bidder;
     private ProductResponseDTO product;
     private Boolean accepted;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
     public BidResponseDTO(Bid saved){
@@ -23,7 +26,7 @@ public class BidResponseDTO {
         this.bidder = new UserResponseDTO(saved.getBidder());
         this.product = new ProductResponseDTO(saved.getProduct());
         this.accepted = saved.isAccepted();
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = saved.getCreatedAt();
     }
 
 }

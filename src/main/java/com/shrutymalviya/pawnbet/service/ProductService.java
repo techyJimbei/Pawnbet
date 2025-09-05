@@ -46,7 +46,7 @@ public class ProductService {
         product.setProductStatus(ProductStatus.ACTIVE);
         product.setAuctionStatus(AuctionStatus.YET_TO_DECLARE);
         product.setSeller(user);
-        product.setImage(productRequestDTO.getImageUrls());
+        product.setImage(productRequestDTO.getImageUrl());
 
         Product saved = productRepository.save(product);
         return new ProductResponseDTO(saved);
@@ -63,7 +63,6 @@ public class ProductService {
                 .map(product -> {
 
                     AuctionStatus auctionStatus = AuctionStatus.valueOf(calculateAuctionStatus(product, product.getAuction()));
-
 
                     ProductResponseDTO dto = new ProductResponseDTO(product);
                     dto.setAuctionStatus(auctionStatus);
@@ -132,7 +131,7 @@ public class ProductService {
         return products.stream().map(ProductResponseDTO::new).collect(Collectors.toList());
     }
 
-    public void addAuctionDetails(long productId, String username, AuctionScheduleRequestDTO auctionScheduleRequestDTO) {
+    public AuctionScheduleResponseDTO addAuctionDetails(long productId, String username, AuctionScheduleRequestDTO auctionScheduleRequestDTO) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not Found"));
 
@@ -143,7 +142,8 @@ public class ProductService {
 
         product.setAuctionStatus(AuctionStatus.DETAILS_ADDED);
 
-        auctionRepository.save(auction);
+        Auction saved = auctionRepository.save(auction);
+        return new AuctionScheduleResponseDTO(saved);
     }
 
     public AuctionScheduleResponseDTO getAuctionDetails(String username, Long productId) {
@@ -170,7 +170,7 @@ public class ProductService {
         }
         LocalDateTime now = LocalDateTime.now();
         if (now.isBefore(auction.getStartTime())) {
-            return "UPCOMING";
+            return "DETAILS_ADDED";
         } else if (now.isAfter(auction.getEndTime())) {
             return "ENDED";
         } else {
