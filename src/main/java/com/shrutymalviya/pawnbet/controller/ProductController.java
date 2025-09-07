@@ -104,5 +104,12 @@ public class ProductController {
         return ResponseEntity.ok(auctionScheduleResponseDTO);
     }
 
+    @GetMapping("/product/auction/my")
+    public ResponseEntity<?> getWinningAuctions(Authentication authentication){
+        String username = authentication.getName();
+        List<ProductResponseDTO> wonProducts = productService.getWinningAuctions(username);
+        return ResponseEntity.ok(wonProducts);
+    }
+
 
 }

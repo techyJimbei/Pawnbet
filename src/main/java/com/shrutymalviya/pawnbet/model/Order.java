@@ -1,10 +1,13 @@
 package com.shrutymalviya.pawnbet.model;
 
 import jakarta.persistence.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "orders")
+@Getter
+@Setter
 public class Order {
 
     @Id
@@ -12,9 +15,15 @@ public class Order {
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "seller_id")
+    private User seller;
+
+    @OneToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @OneToOne
+    @JoinColumn(name = "winning_bid")
     private Bid winningBid;
 
     private boolean isPaid;

@@ -30,5 +30,7 @@ public class Bid extends BaseEntity{
 
     private boolean accepted;
 
+    @OneToOne(mappedBy = "winningBid", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Order order;
 
 }
