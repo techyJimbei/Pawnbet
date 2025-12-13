@@ -1,6 +1,5 @@
 package com.shrutymalviya.pawnbet.service;
 
-
 import com.shrutymalviya.pawnbet.model.Bid;
 import com.shrutymalviya.pawnbet.model.Order;
 import com.shrutymalviya.pawnbet.model.Product;
@@ -13,6 +12,7 @@ import com.shrutymalviya.pawnbet.repositrory.ProductRepository;
 import com.shrutymalviya.pawnbet.repositrory.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,19 +31,22 @@ public class OrderService {
     @Autowired
     private BidRepository bidRepository;
 
-    public OrderResponseDTO addOrder(OrderRequestDTO orderRequestDTO) {
+    @Transactional
+    public synchronized OrderResponseDTO addOrder(OrderRequestDTO orderRequestDTO) {
 
-        Product product = productRepository.findById(orderRequestDTO.productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        Product product = productRepository.findById(orderRequestDTO.productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
 
         if (orderRepository.existsByProduct(product)) {
+            System.out.println("⚠️ Order already exists for product ID: " + product.getId() + " — skipping creation.");
             return new OrderResponseDTO(
                     orderRepository.findByProduct(product)
                             .orElseThrow(() -> new RuntimeException("Order not found"))
             );
         }
 
-
-        Bid bid = bidRepository.findById(orderRequestDTO.winnerBidId).orElseThrow(() -> new RuntimeException("Bid not found"));
+        Bid bid = bidRepository.findById(orderRequestDTO.winnerBidId)
+                .orElseThrow(() -> new RuntimeException("Bid not found"));
 
         Order order = new Order();
         order.setProduct(product);
@@ -53,11 +56,13 @@ public class OrderService {
 
         Order saved = orderRepository.save(order);
 
+        System.out.println("✅ Order created successfully for product ID: " + product.getId());
         return new OrderResponseDTO(saved);
     }
 
-    public List<OrderResponseDTO> getOrders(String username){
-        User user = userRepository.findByUsername(username).orElseThrow(()->new RuntimeException("User not found"));
+    public List<OrderResponseDTO> getOrders(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<Order> orders = orderRepository.findAllBySeller(user);
         return orders.stream().map(OrderResponseDTO::new).toList();
@@ -75,6 +80,4 @@ public class OrderService {
 
         return new OrderResponseDTO(updated);
     }
-
-
 }
