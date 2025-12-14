@@ -38,11 +38,20 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
+                        // Public endpoints - NO authentication required
+                        .requestMatchers("/", "/error").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/signup", "/api/auth/verify").permitAll()
-                        // Protected endpoints
+
+                        // Protected endpoints - authentication REQUIRED
                         .requestMatchers("/api/auth/profile").authenticated()
-                        .requestMatchers("/api/product/**", "/api/bid/**", "/api/comment/**").authenticated()
+                        .requestMatchers("/api/products").authenticated()  // Products now protected
+                        .requestMatchers("/api/product/**").authenticated()
+                        .requestMatchers("/api/bid/**").authenticated()
+                        .requestMatchers("/api/comment/**").authenticated()
+                        .requestMatchers("/api/wishlist/**").authenticated()
+                        .requestMatchers("/api/order/**").authenticated()
+                        .requestMatchers("/api/payment/**").authenticated()
+
                         // All other requests need authentication
                         .anyRequest().authenticated()
                 )
